@@ -1,0 +1,46 @@
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+
+# Exclude override files as they are usually used to override resources locally and should not be committed
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include .terraformrc and terraform.rc files as they are usually used for local configuration and should not be committed
+.terraformrc
+terraform.rc
+
+# Ignore any plan files
+*.tfplan
+
+# Ignore CLI configuration files
+.terraform.lock.hcl
+
+# Ignore test logs and binaries
+*.log
+*.out
+*.test
+
+# Ignore Go binaries and packages
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+vendor/
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
