@@ -31,6 +31,19 @@ fmt: ## Format terraform files
 	@echo "Formatting Terraform files..."
 	$(TERRAFORM) -chdir=$(TERRAFORM_DIR) fmt -recursive
 
+ # Format eks-policy.json using jq
+format-json: ## Format eks-policy.json
+	@echo "Formatting eks-policy.json with jq..."
+	jq . policies/eks-policy.json > policies/eks-policy-formatted.json || { echo "Failed to format JSON"; exit 1; }
+
+move-formatted-json: ## Move formatted eks-policy.json back to original file
+	@echo "Moving formatted JSON file to eks-policy.json..."
+	mv -v policies/eks-policy-formatted.json policies/eks-policy.json || { echo "Failed to move formatted JSON"; exit 1; }
+
+# Target to format and move JSON together
+format-eks-policy: format-json move-formatted-json ## Format and move eks-policy.json
+
+
 # Clean up plan file
 clean: ## Clean up generated files
 	@echo "Cleaning up Terraform plan file..."
