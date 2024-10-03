@@ -1,14 +1,22 @@
-resource "null_resource" "taint_nodes" {
-  depends_on = [aws_eks_node_group.node_group]
-
+resource "null_resource" "configure_kubeconfig" {
   provisioner "local-exec" {
-    command = <<EOT
-    # Wait for nodes to be in Ready state before applying taints
-    kubectl wait --for=condition=Ready nodes --selector="eks.amazonaws.com/nodegroup=informa-nodes" --timeout=5m
-
-    for node in $(kubectl get nodes --selector="eks.amazonaws.com/nodegroup=informa-nodes" -o name); do
-      kubectl taint nodes $node node.cilium.io/agent-not-ready=true:NoExecute
-    done
-    EOT
+    command = "aws eks --region us-east-1 update-kubeconfig --name informa-cluster"
   }
+
+  depends_on = [
+    aws_eks_cluster.eks
+  ]
 }
+
+resource "null_resource" "taint_nodes" {
+  provisioner "local-exec" {
+    command = "ansible-playbook ansible-taint-k8s-nodes.yml"
+  }
+
+  depends_on = [
+    null_resource.configure_kubeconfig,
+    aws_eks_node_group.node_group
+  ]
+}
+
+
