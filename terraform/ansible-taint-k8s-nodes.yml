@@ -1,0 +1,12 @@
+---
+- name: Taint Kubernetes nodes
+  hosts: localhost
+  gather_facts: no
+  tasks:
+    - name: Get list of nodes
+      command: kubectl get nodes -o jsonpath='{.items[*].metadata.name}'
+      register: nodes_output
+
+    - name: Taint nodes
+      command: kubectl taint nodes {{ item }} node.cilium.io/agent-not-ready=true:NoExecute
+      loop: "{{ nodes_output.stdout.split() }}"
