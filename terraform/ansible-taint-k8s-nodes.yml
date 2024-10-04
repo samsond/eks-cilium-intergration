@@ -10,3 +10,22 @@
     - name: Taint nodes
       command: kubectl taint nodes {{ item }} node.cilium.io/agent-not-ready=true:NoExecute
       loop: "{{ nodes_output.stdout.split() }}"
+
+    - name: Check if Cilium Helm repository exists
+      command: helm repo list
+      register: helm_repo_list
+
+    - name: Add Cilium Helm repository
+      command: helm repo add cilium https://helm.cilium.io/
+      when: "'cilium' not in helm_repo_list.stdout"
+
+    - name: Update Helm repositories
+      command: helm repo update
+
+    - name: Install Cilium
+      command: >
+        helm install cilium cilium/cilium --version 1.16.1
+        --namespace kube-system
+        --set nodeinit.enabled=true
+        --set kubeProxyReplacement=true
+        --set cluster.name=informa-cluster
